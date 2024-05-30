@@ -56,7 +56,7 @@ jobs:
           deployment_environment: ${{ steps.extract.outputs.branch }}
 
   build_and_deploy_job_release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release' || (github.event_name == 'pull_request' && github.event.action != 'closed' && github.head_ref == 'release')
+    if: (github.event.pull_request.base.ref == 'release' && (github.event_name == 'pull_request' && github.event.action != 'closed') && github.event.pull_request.draft == false) || (github.ref == 'refs/heads/release' && github.event_name == 'push')
     runs-on: ubuntu-latest
     name: Build and Deploy Job (Release)
     steps:
