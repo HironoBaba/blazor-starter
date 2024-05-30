@@ -36,7 +36,7 @@ jobs:
       - name: Extract branch name
         id: extract
         if: startsWith(github.ref, 'refs/heads/develop')
-        run: echo "branch=$(echo "${{ github.ref }}" | cut -d'/' -f3)" >> $GITHUB_OUTPUT
+        run: echo "branch=$(echo "${{ github.ref }}" | cut -d'/' -f4)" >> $GITHUB_OUTPUT
       - name: Build And Deploy (develop)
         id: builddeploy-develop
         if: startsWith(github.ref, 'refs/heads/develop')
