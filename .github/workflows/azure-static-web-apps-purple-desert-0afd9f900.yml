@@ -13,7 +13,7 @@ on:
       - main
 
 jobs:
-  build_and_deploy_job_dev:
+  build_and_deploy_job_staging:
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     name: Build and Deploy Job
@@ -35,7 +35,16 @@ jobs:
           api_location: "./Api" # Api source code path - optional
           output_location: "wwwroot" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
-
+  
+  build_and_deploy_job_develop:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
       - name: Extract branch name
         id: extract
         if: startsWith(github.ref, 'refs/heads/develop')
@@ -56,17 +65,37 @@ jobs:
           ###### End of Repository/Build Configurations ######
           deployment_environment: ${{ steps.extract.outputs.branch }}
 
-  build_and_deploy_job_release:
-    if: github.ref == 'refs/heads/release'
+  build_and_deploy_job:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    name: Build and Deploy Job (Release)
+    name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
       - name: Build And Deploy
-        id: builddeploy
+        id: builddeploy-main
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_RIVER_0523F6F00 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          app_location: "./Client" # App source code path
+          api_location: "./Api" # Api source code path - optional
+          output_location: "wwwroot" # Built app content directory - optional
+  
+  build_and_deploy_job_release:
+    if: github.ref == 'refs/heads/release'
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+      - name: Build And Deploy (release)
+        id: builddeploy-release
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_RIVER_0523F6F00 }}
